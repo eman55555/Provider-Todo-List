@@ -7,8 +7,8 @@ import '../text_button.dart';
 import '../text_form_field.dart';
 
 class AddBottomSheet extends StatelessWidget {
- final bool edit;
- final int index;
+  final bool edit;
+  final int index;
   final String title;
   final bool complete;
   AddBottomSheet(
@@ -20,7 +20,6 @@ class AddBottomSheet extends StatelessWidget {
 
   @override
   Widget build(context) {
-
     TextEditingController txtController = TextEditingController();
     txtController.text = title;
 
@@ -35,7 +34,8 @@ class AddBottomSheet extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 18.0 ,right: 18.0 , top: 25, bottom: 18),
+                  padding: const EdgeInsets.only(
+                      left: 18.0, right: 18.0, top: 25, bottom: 18),
                   child:
                       Container(child: textField("Task Name", txtController)),
                 ),
@@ -54,21 +54,25 @@ class AddBottomSheet extends StatelessWidget {
                         press: () {
                           if (txtController.text.isNotEmpty) {
                             if (edit == true) {
-                              print(txtController.text);
-
-                              if (viewModel.isRepeated(txtController.text) ==
+                              if (viewModel
+                                      .isRepeatedLocal(txtController.text) ==
                                   false) {
-                                viewModel.editTask(index, txtController.text);
+                                viewModel.tasksBox.putAt(
+                                    index, Task(txtController.text, complete));
+
+                                viewModel.rebuild();
                               }
 
                               txtController.clear();
                               Navigator.pop(context);
                             } else {
-                              if (viewModel.isRepeated(txtController.text) ==
+                              if (viewModel
+                                      .isRepeatedLocal(txtController.text) ==
                                   false) {
                                 Task task = Task(txtController.text, complete);
 
-                                viewModel.addTask(task);
+                                viewModel.tasksBox.add(task);
+                                viewModel.rebuild();
                               }
 
                               txtController.clear();

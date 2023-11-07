@@ -24,11 +24,11 @@ class DashboardScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               taskInfoHeader("Total Tasks"),
-              taskInfoDetails(viewmodel.tasksNum.toString()),
+              taskInfoDetails(viewmodel.tasksNumLocal.toString()),
               taskInfoHeader("Completed Tasks"),
-              taskInfoDetails(viewmodel.completedTasksNum.toString()),
+              taskInfoDetails(viewmodel.completedTasksNumLocal.toString()),
               taskInfoHeader("Non-Completed Tasks"),
-              taskInfoDetails(viewmodel.remainingTasksNum.toString()),
+              taskInfoDetails(viewmodel.remainingTasksNumLocal.toString()),
             ],
           );
         }));
