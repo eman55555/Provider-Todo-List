@@ -11,7 +11,9 @@ class TaskListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<AppViewModel>(builder: (context, viewModel, child) {
-      return viewModel.tasks.isEmpty
+      viewModel.tasksBox.get(keyTasksBox);
+
+      return viewModel.tasksBox.isEmpty
           ? Center(
               child: Card(
               shape: RoundedRectangleBorder(
@@ -29,8 +31,10 @@ class TaskListView extends StatelessWidget {
             ))
           : ListView.separated(
               itemBuilder: (BuildContext context, int index) {
+                var box = viewModel.tasksBox.getAt(index);
+
                 return TaskItem(
-                  txt: viewModel.tasks[index].title,
+                  txt: box.title,
                   index: index,
                   viewmodel: viewModel,
                   edit: () {
@@ -39,19 +43,19 @@ class TaskListView extends StatelessWidget {
                         AddBottomSheet(
                           edit: true,
                           index: index,
-                          title: viewModel.tasks[index].title,
-                          complete: viewModel.tasks[index].completed,
+                          title: box.title,
+                          complete: box.completed,
                         ));
                   },
                   remove: () {
-                    viewModel.removeTask(index);
+                    viewModel.deleteTasksLocal(index);
                   },
-                  completed: viewModel.tasks[index].completed,
+                  completed: box.completed,
                 );
               },
               separatorBuilder: (BuildContext context, int index) =>
                   const SizedBox(height: 20),
-              itemCount: viewModel.tasks.length);
+              itemCount: viewModel.tasksBox.length);
     });
   }
 }
