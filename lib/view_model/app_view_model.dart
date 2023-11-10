@@ -1,48 +1,60 @@
+
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import '../constants/colors.dart';
 import '../models/task_model.dart';
+import '../models/user_model.dart';
 
 class AppViewModel extends ChangeNotifier {
   List<Task> tasks = <Task>[];
 
   int get tasksNum => tasks.length;
-  int get remainingTasksNum => tasks.where((task) => !task.completed).length;
-  int get completedTasksNum => tasksNum - remainingTasksNum;
 
-  bool isRepeated(String txt) {
-    for (int i = 0; i < tasks.length; i++) {
-      if (txt == tasks[i].title) {
+  var tasksBox = Hive.box(keyTasksBox);
+
+  int get tasksNumLocal => tasksBox.length;
+  int get remainingTasksNumLocal =>
+      tasksBox.values.where((task) => !task.completed).length;
+  int get completedTasksNumLocal => tasksNumLocal - remainingTasksNumLocal;
+
+  User user = User("Eman Hamad");
+  String get username => user.username;
+
+  bool isRepeatedLocal(String txt) {
+    for (int i = 0; i < tasksBox.values.toList().length; i++) {
+      if (txt == tasksBox.values.toList()[i].title) {
         return true;
       }
     }
+
+    // tasksBox.values.where((element) => element.title.contains(txt.toLowerCase()));
+
     return false;
   }
 
-  addTask(Task newTask) {
-    tasks.add(newTask);
+  SetTaskStatusLocal(int index, value) {
+    tasksBox.getAt(index).completed = value;
     notifyListeners();
-    print(tasks);
-  }
-
-  removeTask(int index) {
-    tasks.removeAt(index);
-    notifyListeners();
-  }
-
-  editTask(int index, String txt) {
-    tasks[index].title = txt;
-    notifyListeners();
-  }
-
-  SetTaskStatus(int index, value) {
-    tasks[index].completed = value;
-    notifyListeners();
-  }
-
-  taskStatus(int index) {
-    tasks[index].completed;
   }
 
   rebuild() {
+    notifyListeners();
+  }
+
+  saveTasksLocal(Task task) async {
+    try {
+      await tasksBox.add(task);
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  retrieveTasksLocal() {
+    tasksBox.get(keyTasksBox);
+  }
+
+  deleteTasksLocal(int index) {
+    tasksBox.deleteAt(index);
     notifyListeners();
   }
 

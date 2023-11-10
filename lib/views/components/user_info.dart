@@ -36,3 +36,16 @@ Widget userInfoDetails(String txt) => Container(
       txt,
       style: TextStyle(fontSize: 20, color: brown, fontWeight: FontWeight.bold),
     ));
+
+ makeSnackBar(BuildContext context, String txt, Color color ) {
+  var snackBar = SnackBar(
+    content: Text(
+      txt,
+      style: TextStyle(fontSize: 15),
+    ),
+    backgroundColor: color,
+  );
+  return ScaffoldMessenger.of(context).showSnackBar(
+    snackBar,
+  );
+}

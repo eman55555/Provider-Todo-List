@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../constants/colors.dart';
+import '../../models/task_model.dart';
 import '../../view_model/app_view_model.dart';
 
 class TaskItem extends StatelessWidget {
@@ -22,7 +23,6 @@ class TaskItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
- 
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -35,7 +35,7 @@ class TaskItem extends StatelessWidget {
         child: Row(
           children: [
             Transform.scale(
-              
+              //scale: 1.9,
               scaleX: 1.4,
               scaleY: 1.6,
               child: Checkbox(
@@ -43,7 +43,8 @@ class TaskItem extends StatelessWidget {
                   checkColor: lightBlack,
                   value: completed,
                   onChanged: (value) {
-                    viewmodel.SetTaskStatus(index, value);
+                    viewmodel.tasksBox.putAt(index, Task(txt, value!));
+                    viewmodel.rebuild();
                   }),
             ),
             Text(
@@ -51,6 +52,7 @@ class TaskItem extends StatelessWidget {
               style: TextStyle(
                 fontSize: 23,
                 color: lightBlack,
+                // fontWeight: FontWeight.bold
               ),
             ),
             const Spacer(),

@@ -5,26 +5,29 @@ import '../../constants/colors.dart';
 class TextButtonView extends StatelessWidget {
   final txt;
   final Function() press;
-
-  const TextButtonView({super.key, required this.press, required this.txt});
+  double? font = 19.0;
+  double? pad = 18.0;
+  TextButtonView(
+      {super.key, required this.press, required this.txt, this.pad, this.font});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      color: lightBlack,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(6.0),
-      ),
+    return Expanded(
       child: TextButton(
           style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6.0),
+              ),
+              padding: EdgeInsets.symmetric(
+                vertical: pad!,
+              ),
               foregroundColor: brown,
               backgroundColor: lightBlack),
           onPressed: press,
           child: Text(
             txt,
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: font),
           )),
     );
   }
