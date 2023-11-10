@@ -3,6 +3,8 @@
 A new Flutter project.
 
 ## Getting Started
+- Firebase registration
+- form validation
 
 This project is a starting point for a Flutter application.
 
