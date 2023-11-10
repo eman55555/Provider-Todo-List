@@ -1,7 +1,12 @@
+import 'dart:math';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../constants/colors.dart';
 import 'components/text_button.dart';
 import 'components/text_form_field.dart';
+import 'components/user_info.dart';
 import 'home_screen.dart';
 
 class SignupScreen extends StatelessWidget {
@@ -12,7 +17,10 @@ class SignupScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,6 +62,7 @@ class SignupScreen extends StatelessWidget {
                     height: 20,
                   ),
                   textField(
+                    
                     "User Name",
                     userController,
                     Icon(
@@ -61,6 +70,7 @@ class SignupScreen extends StatelessWidget {
                       color: lightBlack,
                     ),
                     TextInputType.name, false,
+                    [FilteringTextInputFormatter.allow(RegExp('[a-zA-Z]')),]
                     //false
                   ),
                   const SizedBox(
@@ -74,7 +84,8 @@ class SignupScreen extends StatelessWidget {
                         color: lightBlack,
                       ),
                       TextInputType.emailAddress,
-                      false
+                      false,
+                      [FilteringTextInputFormatter.allow(RegExp('[a-zA-Z || @ || . || 0-9]')),]
                       //  ,true
                       ),
                   const SizedBox(
@@ -88,6 +99,7 @@ class SignupScreen extends StatelessWidget {
                       color: lightBlack,
                     ),
                     TextInputType.phone, false,
+                     [FilteringTextInputFormatter.allow(RegExp('[0-9]')),]
                     //false
                   ),
                   const SizedBox(
@@ -102,6 +114,7 @@ class SignupScreen extends StatelessWidget {
                     ),
 
                     TextInputType.text, true,
+                     [FilteringTextInputFormatter.allow(RegExp('[a-zA-Z || 0-9]')),]
                     //false
                   ),
                   const SizedBox(
@@ -116,6 +129,7 @@ class SignupScreen extends StatelessWidget {
                     ),
 
                     TextInputType.name, false,
+                     [FilteringTextInputFormatter.allow(RegExp('[a-zA-Z]')),]
                     //false
                   ),
                   const SizedBox(
@@ -130,24 +144,12 @@ class SignupScreen extends StatelessWidget {
                             //viewmodel.register(userController.text , passwordController.text);
 
                             if (!_formKey.currentState!.validate()) {
-                              // If the form is valid, display a Snackbar.
-                              var snackBar = SnackBar(
-                                content: Text(
-                                  'Please Fill Empty Fields !',
-                                  style: TextStyle(fontSize: 15),
-                                ),
-                                backgroundColor: Colors.red,
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                snackBar,
-                              );
+                              makeSnackBar(context,
+                                  'Please Fill Empty Fields !', Colors.red);
                             } else {
                               _formKey.currentState!.save();
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => HomeScreen()),
-                                  (Route<dynamic> route) => false);
+                              register(context, emailController.text.trim(),
+                                  passwordController.text.trim());
                             }
                           },
                           txt: "Signup"),
@@ -160,5 +162,48 @@ class SignupScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  register(BuildContext context, String? email, String? password) async {
+    //    UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+    //     email: email, password: password);
+    // User user = userCredential.user;
+
+    try {
+      final user = await _auth.createUserWithEmailAndPassword(
+        email: email!,
+        password: password!,
+      );
+      if (user != null) {
+        makeSnackBar(context, "signed up Successfuly", lightBlue);
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+            (Route<dynamic> route) => false);
+      }
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case "ERROR_OPERATION_NOT_ALLOWED":
+          makeSnackBar(
+              context, "Anonymous accounts are not enabled", Colors.red);
+          break;
+        case "ERROR_WEAK_PASSWORD":
+          makeSnackBar(context, "Your password is too weak", Colors.red);
+          break;
+        case "ERROR_INVALID_EMAIL":
+          makeSnackBar(context, "Your email is invalid", Colors.red);
+          break;
+        case "ERROR_EMAIL_ALREADY_IN_USE":
+          makeSnackBar(context, "Email is already in use on different account",
+              Colors.red);
+          break;
+        case "ERROR_INVALID_CREDENTIAL":
+          makeSnackBar(context, "Your email is invalid", Colors.red);
+          break;
+
+        default:
+          makeSnackBar(context, e.message.toString(), Colors.red);
+      }
+    }
   }
 }

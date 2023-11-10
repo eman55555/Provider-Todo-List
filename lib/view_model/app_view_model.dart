@@ -1,8 +1,9 @@
-// import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../constants/colors.dart';
 import '../models/task_model.dart';
+import '../models/user_model.dart';
 
 class AppViewModel extends ChangeNotifier {
   List<Task> tasks = <Task>[];
@@ -10,10 +11,14 @@ class AppViewModel extends ChangeNotifier {
   int get tasksNum => tasks.length;
 
   var tasksBox = Hive.box(keyTasksBox);
+
   int get tasksNumLocal => tasksBox.length;
   int get remainingTasksNumLocal =>
       tasksBox.values.where((task) => !task.completed).length;
   int get completedTasksNumLocal => tasksNumLocal - remainingTasksNumLocal;
+
+  User user = User("Eman Hamad");
+  String get username => user.username;
 
   bool isRepeatedLocal(String txt) {
     for (int i = 0; i < tasksBox.values.toList().length; i++) {

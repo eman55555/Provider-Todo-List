@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../constants/colors.dart';
 import '../../../models/task_model.dart';
@@ -44,6 +45,7 @@ class AddBottomSheet extends StatelessWidget {
                     color: lightBlack,
                   ),
                   TextInputType.text, false,
+                   [FilteringTextInputFormatter.allow(RegExp('[a-zA-Z || 0-9]')),]
                   //false
                 )),
               ),

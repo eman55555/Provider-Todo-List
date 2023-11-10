@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../constants/colors.dart';
+import '../view_model/app_view_model.dart';
 import 'components/add_task_button.dart';
 import 'components/app_bar_container.dart';
 import 'components/task_listview.dart';
@@ -15,9 +17,14 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: brown,
       appBar: AppBar(
         elevation: 0,
-        title: Text(
-          "Welcome, Eman Hamad",
-          style: TextStyle(color: brown),
+        title:  Consumer<AppViewModel>(
+      
+      builder: (context, viewModel, child) {
+          return Text(
+            "Welcome, ${viewModel.username}",
+            style: TextStyle(color: brown),
+          );
+      }
         ),
         backgroundColor: lightBlack,
         leading: AppBarContainer(

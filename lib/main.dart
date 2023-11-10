@@ -1,7 +1,6 @@
-// import 'package:firebase_core/firebase_core.dart';
-// import 'dart:io';
-
-// import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'dart:io';
+//import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -18,17 +17,17 @@ void main() async {
   //FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await Future.delayed(const Duration(seconds: 3));
   FlutterNativeSplash.remove();
-//Platform.isAndroid ?
-  // await Firebase.initializeApp(
-  //   options: FirebaseOptions(
-  //     apiKey: "AIzaSyBNsjncqnHOG-hIgOUmoBwl0Y3YBsTJeUI",
-  //     appId: "1:508754062753:android:6f104f82aa778cff5a6fe0",
-  //     messagingSenderId: "508754062753",
-  //     projectId: "todo-9479f",
-  //   ),
-  // ):
+Platform.isAndroid ?
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: "AIzaSyBNsjncqnHOG-hIgOUmoBwl0Y3YBsTJeUI",
+      appId: "1:508754062753:android:6f104f82aa778cff5a6fe0",
+      messagingSenderId: "508754062753",
+      projectId: "todo-9479f",
+    ),
+  ):
 
-  //await Firebase.initializeApp();
+  await Firebase.initializeApp();
 
   await Hive.initFlutter();
   Hive.registerAdapter(TaskAdapter());

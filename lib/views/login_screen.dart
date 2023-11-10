@@ -1,10 +1,15 @@
 // import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mvvm_hive_todolist/views/signup_screen.dart';
 import '../constants/colors.dart';
 import 'components/text_button.dart';
 import 'components/text_form_field.dart';
+import 'components/user_info.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -14,8 +19,8 @@ class LoginScreen extends StatelessWidget {
 
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-//final FirebaseAuth _auth = FirebaseAuth.instance;
-
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+//final FirebaseAuthException _auth = FirebaseAuthException();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,6 +77,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                       TextInputType.emailAddress,
                       false,
+                       [FilteringTextInputFormatter.allow(RegExp('[a-zA-Z || @ || . || 0-9]')),]
                       //  true
                     ),
                     const SizedBox(
@@ -86,6 +92,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                       TextInputType.text,
                       true,
+                       [FilteringTextInputFormatter.allow(RegExp('[a-zA-Z || 0-9]')),]
                       //false
                     ),
                     const SizedBox(
@@ -98,25 +105,13 @@ class LoginScreen extends StatelessWidget {
                           font: 19.0,
                           press: () {
                             if (!_formKey.currentState!.validate()) {
-                              // If the form is valid, display a Snackbar.
-                              var snackBar = SnackBar(
-                                content: Text(
-                                  'Please Fill Empty Fields !',
-                                  style: TextStyle(fontSize: 15),
-                                ),
-                                backgroundColor: Colors.red,
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                snackBar,
-                              );
+                              makeSnackBar(context,
+                                  'Please Fill Empty Fields !', Colors.red);
                             } else {
                               _formKey.currentState!.save();
-                              //  login(emailController.text.trim(), passwordController.text.trim());
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => HomeScreen()),
-                                  (Route<dynamic> route) => false);
+
+                              login(context, emailController.text.trim(),
+                                  passwordController.text.trim());
                             }
                           },
                           txt: "Login",
@@ -152,26 +147,46 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  // Future login(String email, String password) async {
-  //   //    UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-  //   //     email: email, password: password);
-  //   // User user = userCredential.user;
+  login(BuildContext context, String? email, String? password) async {
+    try {
+      final user = await _auth.signInWithEmailAndPassword(
+        email: email!,
+        password: password!,
+      );
+      if (user != null) {
+        makeSnackBar(context, "logged in Successfuly", lightBlue);
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+            (Route<dynamic> route) => false);
+      }
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case "invalid-email":
+          makeSnackBar(context, "the email address is not valid", Colors.red);
+          break;
 
-  //    await _auth.signInWithEmailAndPassword(
-  //     email: email,
-  //     password: password,
-  //   );
-  //   print("userCredential.user!");
-  //   // print(userCredential.user!);
-  //   // if (userCredential != null) {
+        case "user-disabled":
+          makeSnackBar(
+              context, "the given email has been disabled", Colors.red);
+          break;
 
-  //   //     _success = true;
-  //   //     _userEmail = userCredential.user!.email;
-  //   // notifyListeners();
-  //   // } else {
-  //   //   setState(() {
-  //   //     _success = true;
-  //   //   });
-  //   // }
-  // }
+        case "user-not-found":
+          makeSnackBar(
+              context, "no user corresponding to the given email", Colors.red);
+          break;
+
+        case "wrong-password" || "INVALID_LOGIN_CREDENTIALS":
+          makeSnackBar(context, "password or email is invalid", Colors.red);
+          break;
+        case "too_many_requets":
+          makeSnackBar(
+              context, "Too many requests. Try again later", Colors.red);
+          break;
+
+        default:
+          makeSnackBar(context, "Invalid , Try Again Later", Colors.red);
+      }
+    }
+  }
 }
